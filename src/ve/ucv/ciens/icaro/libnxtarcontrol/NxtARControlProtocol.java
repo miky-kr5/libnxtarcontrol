@@ -28,7 +28,7 @@ import ve.ucv.ciens.icaro.libnxtarcontrol.DecodedControlAction.Motor;
  * @see <a href="http://www.lejos.org">The LejOS operating system.</a>
  * @see <a href="https://github.com/sagge-miky/NxtAR-core">NxtAR-core Github repository.</a>
  * @author Miguel Angel Astor Romero
- * @version 1.0
+ * @version 1.0.1
  * @since December 15, 2014
  */
 public class NxtARControlProtocol {
@@ -113,9 +113,12 @@ public class NxtARControlProtocol {
 	}
 
 	/**
-	 * 
-	 * @param blocking
-	 * @return
+	 * <p>Attempts to read, decode and execute a message, calling the user operation
+	 * listeners if needed.</p>
+	 *
+	 * @return True if a message could be read, decoded and executed successfully. False otherwise.
+	 * @throws IOException If reading the message fails. It is the same IOException
+         * as thrown by {@link DataInput#readByte()} if any.
 	 */
 	public boolean readAndExecuteMessage() throws IOException{
 		boolean success = false;
@@ -167,6 +170,7 @@ public class NxtARControlProtocol {
 						controlMotor(MotorPort.MOTOR_C, MotorAction.BACKWARD, controlAction.speed);
 						break;
 					}
+					success = true;
 					break;
 
 				case MOVE_FORWARD:
@@ -198,6 +202,7 @@ public class NxtARControlProtocol {
 						controlMotor(MotorPort.MOTOR_C, MotorAction.FORWARD, controlAction.speed);
 						break;
 					}
+					success = true;
 					break;
 
 				case RECENTER:
@@ -229,6 +234,7 @@ public class NxtARControlProtocol {
 						recenterMotor(MotorPort.MOTOR_C);
 						break;
 					}
+					success = true;
 					break;
 
 				case STOP:
@@ -260,6 +266,7 @@ public class NxtARControlProtocol {
 						controlMotor(MotorPort.MOTOR_C, MotorAction.STOP, controlAction.speed);
 						break;
 					}
+					success = true;
 					break;
 
 				case USER_1:
