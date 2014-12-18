@@ -28,7 +28,7 @@ import ve.ucv.ciens.icaro.libnxtarcontrol.DecodedControlAction.Motor;
  * @see <a href="http://www.lejos.org">The LejOS operating system.</a>
  * @see <a href="https://github.com/sagge-miky/NxtAR-core">NxtAR-core Github repository.</a>
  * @author Miguel Angel Astor Romero
- * @version 1.0.1
+ * @version 1.1.0
  * @since December 15, 2014
  */
 public class NxtARControlProtocol {
@@ -118,7 +118,7 @@ public class NxtARControlProtocol {
 	 *
 	 * @return True if a message could be read, decoded and executed successfully. False otherwise.
 	 * @throws IOException If reading the message fails. It is the same IOException
-         * as thrown by {@link DataInput#readByte()} if any.
+	 * as thrown by {@link DataInput#readByte()} if any.
 	 */
 	public boolean readAndExecuteMessage() throws IOException{
 		boolean success = false;
@@ -140,142 +140,7 @@ public class NxtARControlProtocol {
 			}
 
 			if(controlAction != null){
-				switch(controlAction.action){
-				case MOVE_BACKWARDS:
-					switch(controlAction.motor){
-					case MOTOR_A:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.BACKWARD, controlAction.speed);
-						break;
-					case MOTOR_AB:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.BACKWARD, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_B, MotorAction.BACKWARD, controlAction.speed);
-						break;
-					case MOTOR_ABC:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.BACKWARD, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_B, MotorAction.BACKWARD, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_C, MotorAction.BACKWARD, controlAction.speed);
-						break;
-					case MOTOR_AC:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.BACKWARD, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_C, MotorAction.BACKWARD, controlAction.speed);
-						break;
-					case MOTOR_B:
-						controlMotor(MotorPort.MOTOR_B, MotorAction.BACKWARD, controlAction.speed);
-						break;
-					case MOTOR_BC:
-						controlMotor(MotorPort.MOTOR_B, MotorAction.BACKWARD, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_C, MotorAction.BACKWARD, controlAction.speed);
-						break;
-					case MOTOR_C:
-						controlMotor(MotorPort.MOTOR_C, MotorAction.BACKWARD, controlAction.speed);
-						break;
-					}
-					success = true;
-					break;
-
-				case MOVE_FORWARD:
-					switch(controlAction.motor){
-					case MOTOR_A:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.FORWARD, controlAction.speed);
-						break;
-					case MOTOR_AB:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.FORWARD, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_B, MotorAction.FORWARD, controlAction.speed);
-						break;
-					case MOTOR_ABC:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.FORWARD, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_B, MotorAction.FORWARD, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_C, MotorAction.FORWARD, controlAction.speed);
-						break;
-					case MOTOR_AC:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.FORWARD, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_C, MotorAction.FORWARD, controlAction.speed);
-						break;
-					case MOTOR_B:
-						controlMotor(MotorPort.MOTOR_B, MotorAction.FORWARD, controlAction.speed);
-						break;
-					case MOTOR_BC:
-						controlMotor(MotorPort.MOTOR_B, MotorAction.FORWARD, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_C, MotorAction.FORWARD, controlAction.speed);
-						break;
-					case MOTOR_C:
-						controlMotor(MotorPort.MOTOR_C, MotorAction.FORWARD, controlAction.speed);
-						break;
-					}
-					success = true;
-					break;
-
-				case RECENTER:
-					switch(controlAction.motor){
-					case MOTOR_A:
-						recenterMotor(MotorPort.MOTOR_A);
-						break;
-					case MOTOR_AB:
-						recenterMotor(MotorPort.MOTOR_A);
-						recenterMotor(MotorPort.MOTOR_B);
-						break;
-					case MOTOR_ABC:
-						recenterMotor(MotorPort.MOTOR_A);
-						recenterMotor(MotorPort.MOTOR_B);
-						recenterMotor(MotorPort.MOTOR_C);
-						break;
-					case MOTOR_AC:
-						recenterMotor(MotorPort.MOTOR_A);
-						recenterMotor(MotorPort.MOTOR_C);
-						break;
-					case MOTOR_B:
-						recenterMotor(MotorPort.MOTOR_B);
-						break;
-					case MOTOR_BC:
-						recenterMotor(MotorPort.MOTOR_B);
-						recenterMotor(MotorPort.MOTOR_C);
-						break;
-					case MOTOR_C:
-						recenterMotor(MotorPort.MOTOR_C);
-						break;
-					}
-					success = true;
-					break;
-
-				case STOP:
-					switch(controlAction.motor){
-					case MOTOR_A:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.STOP, controlAction.speed);
-						break;
-					case MOTOR_AB:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.STOP, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_B, MotorAction.STOP, controlAction.speed);
-						break;
-					case MOTOR_ABC:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.STOP, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_B, MotorAction.STOP, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_C, MotorAction.STOP, controlAction.speed);
-						break;
-					case MOTOR_AC:
-						controlMotor(MotorPort.MOTOR_A, MotorAction.STOP, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_C, MotorAction.STOP, controlAction.speed);
-						break;
-					case MOTOR_B:
-						controlMotor(MotorPort.MOTOR_B, MotorAction.STOP, controlAction.speed);
-						break;
-					case MOTOR_BC:
-						controlMotor(MotorPort.MOTOR_B, MotorAction.STOP, controlAction.speed);
-						controlMotor(MotorPort.MOTOR_C, MotorAction.STOP, controlAction.speed);
-						break;
-					case MOTOR_C:
-						controlMotor(MotorPort.MOTOR_C, MotorAction.STOP, controlAction.speed);
-						break;
-					}
-					success = true;
-					break;
-
-				case USER_1:
-				case USER_2:
-				case USER_3:
-					notifyListeners(controlAction.action, controlAction.motor, controlAction.speed);
-					success = true;
-					break;
-				}
+				success = executeControlAction(controlAction);
 			}
 		}
 
@@ -300,7 +165,7 @@ public class NxtARControlProtocol {
 	 * @return A {@link DecodedControlAction} instance containing the decoded message.
 	 * @throws IllegalArgumentException If the array is null or has less than 2 elements.
 	 */
-	public DecodedControlAction decodeMessage(byte[] message) throws IllegalArgumentException{
+	public DecodedControlAction decodeMessage(final byte[] message) throws IllegalArgumentException{
 		Action action = Action.STOP;
 		Motor motor = Motor.MOTOR_ABC;
 		DecodedControlAction controlAction;
@@ -367,6 +232,161 @@ public class NxtARControlProtocol {
 	}
 
 	/**
+	 * <p>Executes an already decoded {@link DecodedControlAction}, calling the user operation
+	 * listeners if needed.</p>
+	 * 
+	 * @param controlAction The action to execute.
+	 * @return True if the action could be executed successfully. False otherwise.
+	 * @throws IllegalArgumentException If controlAction is null.
+	 */
+	public boolean executeControlAction(final DecodedControlAction controlAction) throws IllegalArgumentException{
+		boolean success = false;
+
+		if(controlAction == null){
+			throw new IllegalArgumentException("Control action is null.");
+		}else{
+			switch(controlAction.action){
+			case MOVE_BACKWARDS:
+				switch(controlAction.motor){
+				case MOTOR_A:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.BACKWARD, controlAction.speed);
+					break;
+				case MOTOR_AB:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.BACKWARD, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_B, MotorAction.BACKWARD, controlAction.speed);
+					break;
+				case MOTOR_ABC:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.BACKWARD, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_B, MotorAction.BACKWARD, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_C, MotorAction.BACKWARD, controlAction.speed);
+					break;
+				case MOTOR_AC:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.BACKWARD, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_C, MotorAction.BACKWARD, controlAction.speed);
+					break;
+				case MOTOR_B:
+					controlMotor(MotorPort.MOTOR_B, MotorAction.BACKWARD, controlAction.speed);
+					break;
+				case MOTOR_BC:
+					controlMotor(MotorPort.MOTOR_B, MotorAction.BACKWARD, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_C, MotorAction.BACKWARD, controlAction.speed);
+					break;
+				case MOTOR_C:
+					controlMotor(MotorPort.MOTOR_C, MotorAction.BACKWARD, controlAction.speed);
+					break;
+				}
+				success = true;
+				break;
+
+			case MOVE_FORWARD:
+				switch(controlAction.motor){
+				case MOTOR_A:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.FORWARD, controlAction.speed);
+					break;
+				case MOTOR_AB:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.FORWARD, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_B, MotorAction.FORWARD, controlAction.speed);
+					break;
+				case MOTOR_ABC:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.FORWARD, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_B, MotorAction.FORWARD, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_C, MotorAction.FORWARD, controlAction.speed);
+					break;
+				case MOTOR_AC:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.FORWARD, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_C, MotorAction.FORWARD, controlAction.speed);
+					break;
+				case MOTOR_B:
+					controlMotor(MotorPort.MOTOR_B, MotorAction.FORWARD, controlAction.speed);
+					break;
+				case MOTOR_BC:
+					controlMotor(MotorPort.MOTOR_B, MotorAction.FORWARD, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_C, MotorAction.FORWARD, controlAction.speed);
+					break;
+				case MOTOR_C:
+					controlMotor(MotorPort.MOTOR_C, MotorAction.FORWARD, controlAction.speed);
+					break;
+				}
+				success = true;
+				break;
+
+			case RECENTER:
+				switch(controlAction.motor){
+				case MOTOR_A:
+					recenterMotor(MotorPort.MOTOR_A);
+					break;
+				case MOTOR_AB:
+					recenterMotor(MotorPort.MOTOR_A);
+					recenterMotor(MotorPort.MOTOR_B);
+					break;
+				case MOTOR_ABC:
+					recenterMotor(MotorPort.MOTOR_A);
+					recenterMotor(MotorPort.MOTOR_B);
+					recenterMotor(MotorPort.MOTOR_C);
+					break;
+				case MOTOR_AC:
+					recenterMotor(MotorPort.MOTOR_A);
+					recenterMotor(MotorPort.MOTOR_C);
+					break;
+				case MOTOR_B:
+					recenterMotor(MotorPort.MOTOR_B);
+					break;
+				case MOTOR_BC:
+					recenterMotor(MotorPort.MOTOR_B);
+					recenterMotor(MotorPort.MOTOR_C);
+					break;
+				case MOTOR_C:
+					recenterMotor(MotorPort.MOTOR_C);
+					break;
+				}
+				success = true;
+				break;
+
+			case STOP:
+				switch(controlAction.motor){
+				case MOTOR_A:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.STOP, controlAction.speed);
+					break;
+				case MOTOR_AB:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.STOP, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_B, MotorAction.STOP, controlAction.speed);
+					break;
+				case MOTOR_ABC:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.STOP, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_B, MotorAction.STOP, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_C, MotorAction.STOP, controlAction.speed);
+					break;
+				case MOTOR_AC:
+					controlMotor(MotorPort.MOTOR_A, MotorAction.STOP, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_C, MotorAction.STOP, controlAction.speed);
+					break;
+				case MOTOR_B:
+					controlMotor(MotorPort.MOTOR_B, MotorAction.STOP, controlAction.speed);
+					break;
+				case MOTOR_BC:
+					controlMotor(MotorPort.MOTOR_B, MotorAction.STOP, controlAction.speed);
+					controlMotor(MotorPort.MOTOR_C, MotorAction.STOP, controlAction.speed);
+					break;
+				case MOTOR_C:
+					controlMotor(MotorPort.MOTOR_C, MotorAction.STOP, controlAction.speed);
+					break;
+				}
+				success = true;
+				break;
+
+			case USER_1:
+			case USER_2:
+			case USER_3:
+				notifyListeners(controlAction.action, controlAction.motor, controlAction.speed);
+				success = true;
+				break;
+			}
+		}
+
+		return success;
+	}
+
+	/**
 	 * <p>Adds an {@link UserActionListener} to this object's listeners list calling it's 
 	 * {@link UserActionListener#onListenerRegistered()} method. Adding a listener that
 	 * is already registered does nothing.</p>
@@ -374,7 +394,7 @@ public class NxtARControlProtocol {
 	 * @param listener The listener to add.
 	 * @throws IllegalArgumentException If listener is null.
 	 */
-	public synchronized void registerUserActionListener(UserActionListener listener) throws IllegalArgumentException{
+	public synchronized void registerUserActionListener(final UserActionListener listener) throws IllegalArgumentException{
 		if(listener == null)
 			throw new IllegalArgumentException("Listener is null.");
 
@@ -392,7 +412,7 @@ public class NxtARControlProtocol {
 	 * @param listener The listener to remove.
 	 * @throws IllegalArgumentException If listener is null.
 	 */
-	public synchronized void removeUserActionListener(UserActionListener listener) throws IllegalArgumentException{
+	public synchronized void removeUserActionListener(final UserActionListener listener) throws IllegalArgumentException{
 		if(listener == null)
 			throw new IllegalArgumentException("Listener is null.");
 
@@ -409,7 +429,7 @@ public class NxtARControlProtocol {
 	 * 
 	 * @param userAction The action that triggered the notification.
 	 */
-	private void notifyListeners(Action userAction, Motor motorFlag, int speed){
+	private void notifyListeners(final Action userAction, final Motor motorFlag, final int speed){
 		switch(userAction){
 		case USER_1:
 			for(UserActionListener listener : userActionListeners)
