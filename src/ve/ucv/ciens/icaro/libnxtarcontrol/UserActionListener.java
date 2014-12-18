@@ -24,7 +24,7 @@ import ve.ucv.ciens.icaro.libnxtarcontrol.DecodedControlAction.Motor;
  */
 public interface UserActionListener {
 	/**
-	 * <p>Executes a set of instructions just after the listener has been registered with an {@link NxtARControlProtocol instance}.</p>
+	 * <p>Executes a set of instructions just after the listener has been registered with an {@link NxtARControlProtocol} instance.</p>
 	 */
 	public void onListenerRegistered();
 
@@ -44,7 +44,7 @@ public interface UserActionListener {
 	public void onUserAction3(Motor motorFlag, int speed);
 
 	/**
-	 * <p>Executes a set of instructions just after the listener has been removed from an {@link NxtARControlProtocol instance}.</p>
+	 * <p>Executes a set of instructions just after the listener has been removed from an {@link NxtARControlProtocol} instance.</p>
 	 */
 	public void onListenerRemoved();
 }
