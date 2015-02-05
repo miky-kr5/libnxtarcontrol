@@ -14,6 +14,8 @@ package ve.ucv.ciens.icaro.libnxtarcontrol;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -28,7 +30,7 @@ import ve.ucv.ciens.icaro.libnxtarcontrol.DecodedControlAction.Motor;
  * @see <a href="http://www.lejos.org">The LejOS operating system.</a>
  * @see <a href="https://github.com/sagge-miky/NxtAR-core">NxtAR-core Github repository.</a>
  * @author Miguel Angel Astor Romero
- * @version 1.1.0
+ * @version 1.2.0
  * @since December 15, 2014
  */
 public class NxtARControlProtocol {
@@ -53,63 +55,197 @@ public class NxtARControlProtocol {
 	private static final byte USER_2      = (byte)0x40;
 	private static final byte USER_3      = (byte)0x80;
 
+	// Helpfull masks.
+	private static final byte STOP_ALL_MOTORS = (byte)0xF8;
+	private static final byte MOVE_BACKWARD = (byte)0xF8;
+
 	private DataInputStream inputStream;
+	private DataOutputStream outputStream;
 	private LinkedList<UserActionListener> userActionListeners;
 
 	/**
 	 * <p>Create a new ARControl object.</p> 
 	 * 
-	 * @param inputStream An opened input stream used to read protocol messages from.
-	 * @throws IllegalArgumentException If inputStream is null.
+	 * @param inputStream A {@link DataInputStream} used to read protocol messages from. Can be null.
+	 * @param outputStream An {@link DataOutputStream} used to write protocol messages to. Can be null.
 	 */
-	public NxtARControlProtocol(final DataInputStream inputStream) throws IllegalArgumentException{
-		if(inputStream == null)
-			throw new IllegalArgumentException("Input stream is null.");
-
+	public NxtARControlProtocol(final DataInputStream inputStream, final DataOutputStream outputStream){
+		this.outputStream = outputStream;
 		this.inputStream = inputStream;
 		this.userActionListeners = new LinkedList<UserActionListener>();
 	}
 
 	/**
-	 * <p>Changes the input stream associated with this ARControl for the input stream passed as
-	 * parameter. The currently set input stream is closed before replacing it.</p>
+	 * <p>Changes the {@link DataOutputStream} associated with this ARControl to the output stream passed as
+	 * parameter. The currently set output stream is flushed and closed before replacing it.</p>
 	 * 
-	 * @param inputStream An opened input stream.
-	 * @throws IOException If an error happened while closing the previous input stream.
-	 * @throws IllegalArgumentException If the input stream is null.
+	 * @param outpuStream An opened output stream. Can be null.
+	 * @throws IOException If an error happened while closing the previous output stream.
 	 */
-	public void setInputStream(DataInputStream inputStream) throws IOException, IllegalArgumentException{
-		if(inputStream == null)
-			throw new IllegalArgumentException("Input stream is null.");
-
-		try{
-			this.inputStream.close();
-		}catch(IOException io){
-			throw io;
+	public void setOutputStream(DataOutputStream outputStream) throws IOException{
+		if(this.outputStream != null){
+			this.outputStream.flush();
+			this.outputStream.close();
+			this.outputStream = null;
 		}
 
-		this.inputStream = null;
+		this.outputStream = outputStream;
+	}
+
+	/**
+	 * <p>Attempts to write a 2-byte message to the associated {@link DataOutputStream} if any.</p>
+	 * 
+	 * <p>Returns immediately if no {@link DataOutputStream} has been set with
+	 * {@link NxtARControlProtocol#setOutputStream(DataOutputStream)} or if the message is null. If the
+	 * message is longer than two bytes only the first two bytes are written to the output stream.</p>
+	 * 
+	 * @throws IOException If writing the message fails. It is the same IOException
+	 * as thrown by {@link DataOutput#write(byte[], int, int)}.
+	 * @throws IllegalArgumentException If the message lenght is less than two.
+	 */
+	public void writeRawControlMessage(byte[] message) throws IOException, IllegalArgumentException{
+		if(outputStream == null || message == null){
+			return;
+		}else{
+			if(message.length < 2)
+				throw new IllegalArgumentException("Message length is less than two.");
+
+			synchronized (outputStream) {
+				outputStream.write(message, 0, 2);
+				outputStream.flush();
+			}
+		}
+	}
+
+	/**
+	 * <p>Encodes a given {@link DecodedControlAction} into a two byte array.</p>
+	 * 
+	 * @param action the action to encode.
+	 * @return The encoded action. Null if said action is null.
+	 */
+	public byte[] encodeControlAction(DecodedControlAction action){
+		if(action == null){
+			return null;
+		}else{
+			byte[] message = {0x00, 0x00};
+
+			switch(action.action){
+			case MOVE_BACKWARDS:
+				message[0] |= DIRECTION;
+				break;
+			case MOVE_FORWARD:
+				message[0] &= MOVE_BACKWARD;
+				break;
+			case RECENTER:
+				message[0] |= RECENTER;
+				break;
+			case STOP:
+				message[0] &= STOP_ALL_MOTORS; 
+				break;
+			case USER_1:
+				message[0] |= USER_1;
+				break;
+			case USER_2:
+				message[0] |= USER_2;
+				break;
+			case USER_3:
+				message[0] |= USER_3;
+				break;
+			}
+
+			switch(action.motor){
+			case MOTOR_A:
+				message[0] |= MOTOR_A;
+				break;
+			case MOTOR_AB:
+				message[0] |= MOTOR_A;
+				message[0] |= MOTOR_B;
+				break;
+			case MOTOR_ABC:
+				message[0] |= MOTOR_A;
+				message[0] |= MOTOR_B;
+				message[0] |= MOTOR_C;
+				break;
+			case MOTOR_AC:
+				message[0] |= MOTOR_A;
+				message[0] |= MOTOR_C;
+				break;
+			case MOTOR_B:
+				message[0] |= MOTOR_B;
+				break;
+			case MOTOR_BC:
+				message[0] |= MOTOR_B;
+				message[0] |= MOTOR_C;
+				break;
+			case MOTOR_C:
+				message[0] |= MOTOR_C;
+				break;
+			}
+
+			message[1] = (byte)clamp(action.speed, -100, 100);
+
+			return message;
+		}
+	}
+
+	/**
+	 * <p>Encodes and writes a {@link DecodedControlAction} into the associated {@link DataOutputStream} if any.</p>
+	 * 
+	 * @param action The action to write.
+	 * @return True if writing the action succeded. False if either the action or the DataOutputStream are null.
+	 * @throws IOException If writing the message fails.
+	 */
+	public boolean writeMessage(final DecodedControlAction action) throws IOException{
+		boolean success = false;
+
+		if(action != null && outputStream != null){
+			byte[] msg = encodeControlAction(action);
+
+			writeRawControlMessage(msg);
+			success = true;
+		}
+
+		return success;
+	}
+
+	/**
+	 * <p>Changes the input stream associated with this ARControl to the input stream passed as
+	 * parameter. The currently set input stream is closed before replacing it.</p>
+	 * 
+	 * @param inputStream An opened input stream. Can be null.
+	 * @throws IOException If an error happened while closing the previous input stream.
+	 */
+	public void setInputStream(DataInputStream inputStream) throws IOException{
+		if(this.inputStream != null){
+			this.inputStream.close();
+			this.inputStream = null;
+		}
+
 		this.inputStream = inputStream;
 	}
 
 	/**
 	 * <p>Attempts to read a 2-byte message and returns it as is.</p>
 	 * 
+	 * <p>Returns null if no {@link DataInputStream} has been set with
+	 * {@link NxtARControlProtocol#setInputStream(DataInputStream)}.</p>
+	 * 
 	 * @return The two bytes read from the associated connection as an array.
 	 * @throws IOException If reading the message fails. It is the same IOException
-	 * as thrown by {@link DataInput#readByte()} if any.
+	 * as thrown by {@link DataInput#readByte()}.
 	 */
 	public byte[] readRawControlMessage() throws IOException{
-		byte[] msg = new byte[2];
-		try{
+		if(inputStream == null){
+			return null;
+		}else{
+			byte[] msg = new byte[2];
 			synchronized (inputStream) {
 				msg[0] = inputStream.readByte();
 				msg[1] = inputStream.readByte();
 			}
-		}catch (IOException io){
-			throw io;
+
+			return msg;
 		}
-		return msg;
 	}
 
 	/**
@@ -538,5 +674,9 @@ public class NxtARControlProtocol {
 			lejos.nxt.Motor.C.rotate(rotation, false);
 			break;
 		}
+	}
+
+	private int clamp(int i, int min, int max){
+		return i > max ? max : (i < min ? min : i);
 	}
 }
